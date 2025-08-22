@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "timer.h"
+
 int main(int argc, char *argv[]) {
     struct timeval start, stop, overall_t1, overall_t2;
     unsigned long int i, VECTOR_SIZE, *vector;

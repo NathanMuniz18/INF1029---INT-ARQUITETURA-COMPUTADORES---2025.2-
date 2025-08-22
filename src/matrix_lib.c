@@ -1,12 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "matrix_lib.h"
 
-
-struct matrix {
-    unsigned long int height; //num linhas
-    unsigned long int width; //num colunas
-    float *rows;
-}typedef struct matrix Matrix;
+int scalar_matrix_mult(float scalar_value, struct matrix *matrix);
+int matrix_matrix_mult(struct matrix *matrixA, struct matrix *matrixB, struct matrix *);
 
 int scalar_matrix_mult(float scalar_value, struct matrix *matrix) {
     if (matrix == NULL || matrix->rows == NULL) {
