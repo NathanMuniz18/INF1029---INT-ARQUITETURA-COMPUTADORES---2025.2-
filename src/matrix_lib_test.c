@@ -77,6 +77,29 @@ int main(int argc, char *argv[]) {
     fwrite(A.rows, sizeof(float), A_h * A_w, fout1);
     fclose(fout1);
 
+
+    printf("Matriz A (%lux%lu):\n", A.height, A.width);
+    unsigned long int printedA = 0;
+    for (unsigned long int i = 0; i < A.height && printedA < 256; ++i) {
+        for (unsigned long int j = 0; j < A.width && printedA < 256; ++j) {
+            printf("%8.2f ", A.rows[i * A.width + j]);
+            printedA++;
+        }
+        printf("\n");
+    }
+    if (A.height * A.width > 256) printf("... (truncated)\n");
+
+    printf("Matriz B (%lux%lu):\n", B.height, B.width);
+    unsigned long int printedB = 0;
+    for (unsigned long int i = 0; i < B.height && printedB < 256; ++i) {
+        for (unsigned long int j = 0; j < B.width && printedB < 256; ++j) {
+            printf("%8.2f ", B.rows[i * B.width + j]);
+            printedB++;
+        }
+        printf("\n");
+    }
+    if (B.height * B.width > 256) printf("... (truncated)\n");
+
     // --- Matrix multiplication ---
     gettimeofday(&start, NULL);
     if (!matrix_matrix_mult(&A, &B, &C)) {
@@ -94,6 +117,19 @@ int main(int argc, char *argv[]) {
     // --- Tempo total ---
     gettimeofday(&overall_t2, NULL);
     printf("Tempo total: %f ms\n", timedifference_msec(overall_t1, overall_t2));
+
+
+    printf("Matriz C (%lux%lu):\n", C.height, C.width);
+    unsigned long int printedC = 0;
+    for (unsigned long int i = 0; i < C.height && printedC < 256; ++i) {
+        for (unsigned long int j = 0; j < C.width && printedC < 256; ++j) {
+            printf("%8.2f ", C.rows[i * C.width + j]);
+            printedC++;
+        }
+        printf("\n");
+    }
+    if (C.height * C.width > 256) printf("... (truncated)\n");
+
 
     // --- Liberação ---
     free(A.rows);

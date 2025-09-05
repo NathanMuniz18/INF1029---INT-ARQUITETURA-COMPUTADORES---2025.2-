@@ -19,6 +19,7 @@ int scalar_matrix_mult(float scalar_value, struct matrix *matrix) {
     return 1; // sucesso
 }
 
+/*
 int matrix_matrix_mult(struct matrix *matrixA, struct matrix *matrixB, struct matrix *matrixC) {
     if (matrixA == NULL || matrixB == NULL || matrixC == NULL) {
         return 0; // erro
@@ -44,5 +45,38 @@ int matrix_matrix_mult(struct matrix *matrixA, struct matrix *matrixB, struct ma
         }
     }
     return 1; // sucesso
-}
+}*/
 
+int matrix_matrix_mult(struct matrix *matrixA, struct matrix *matrixB, struct matrix *matrixC) {
+    if (matrixA == NULL || matrixB == NULL || matrixC == NULL) {
+        return 0; // erro
+    }
+
+    if (matrixA->width != matrixB->height) {
+        printf("matrixA width: %lu, matrixB height: %lu\n", matrixA->width, matrixB->height);
+        return 0; // dimensões incompatíveis
+    }
+
+    if (matrixC->height != matrixA->height || matrixC->width != matrixB->width) {
+        printf("matrixC height: %lu, expected: %lu\n", matrixC->height, matrixA->height);
+        printf("matrixC width: %lu, expected: %lu\n", matrixC->width, matrixB->width);
+        return 0; // matriz C com dimensões erradas
+    }
+
+    for (unsigned int i = 0; i < matrixA->height; i++) {   // percorre as linhas de A
+        for(unsigned int j = 0; j < matrixB->width; j++)
+        {
+            matrixC->rows[i * matrixC->width + j] = 0.0; // inicializa C[i][j]
+        }
+
+        for (unsigned int k = 0; k < matrixA->width; k++) { // percorre cada elemento da linha i de A e da coluna j de B
+            float a = matrixA->rows[i * matrixA->width + k];
+            for(unsigned int j = 0; j < matrixB->width; j++)
+            {
+                float b = matrixB->rows[k * matrixB->width + j];
+                matrixC->rows[i * matrixC->width + j] += a * b; // acumula o resultado em C[i][j]
+            }
+        }
+    }
+    return 1;
+}
