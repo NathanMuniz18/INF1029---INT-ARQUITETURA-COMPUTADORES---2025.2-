@@ -27,6 +27,9 @@ int main(int argc, char *argv[]) {
     unsigned long int B_h = strtoul(argv[4], &eptr, 10);
     unsigned long int B_w = strtoul(argv[5], &eptr, 10);
 
+    float time_scalar_mult = 0.0;
+    float time_matrix_mult = 0.0;
+
     char *fileA = argv[6];
     char *fileB = argv[7];
     char *fileOut1 = argv[8];
@@ -70,7 +73,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     gettimeofday(&stop, NULL);
-    printf("Tempo scalar_matrix_mult: %f ms\n", timedifference_msec(start, stop));
+    time_scalar_mult = timedifference_msec(start, stop);
 
     // --- Salvando resultado de A ---
     FILE *fout1 = fopen(fileOut1, "wb");
@@ -87,7 +90,7 @@ int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
-    if (A.height * A.width > 256) printf("... (truncated)\n");
+    if (A.height * A.width > 256) printf("... (limite de elementos atingido)\n");
 
     printf("Matriz B (%lux%lu):\n", B.height, B.width);
     unsigned long int printedB = 0;
@@ -98,7 +101,7 @@ int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
-    if (B.height * B.width > 256) printf("... (truncated)\n");
+    if (B.height * B.width > 256) printf("... (limite de elementos atingido)\n");
 
     // --- Matrix multiplication ---
     gettimeofday(&start, NULL);
@@ -107,7 +110,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     gettimeofday(&stop, NULL);
-    printf("Tempo matrix_matrix_mult: %f ms\n", timedifference_msec(start, stop));
+    time_matrix_mult = timedifference_msec(start, stop);
 
     // --- Salvando resultado de C ---
     FILE *fout2 = fopen(fileOut2, "wb");
@@ -116,8 +119,6 @@ int main(int argc, char *argv[]) {
 
     // --- Tempo total ---
     gettimeofday(&overall_t2, NULL);
-    printf("Tempo total: %f ms\n", timedifference_msec(overall_t1, overall_t2));
-
 
     printf("Matriz C (%lux%lu):\n", C.height, C.width);
     unsigned long int printedC = 0;
@@ -128,9 +129,15 @@ int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
-    if (C.height * C.width > 256) printf("... (truncated)\n");
+    if (C.height * C.width > 256) printf("... (limite de elementos atingido)\n");
 
 
+
+    // --- Resultados ---
+    printf("\n-------------------------------------------- Resultados: --------------------------------------------\n");
+    printf("Tempo scalar_matrix_mult: %f ms\n", time_scalar_mult);
+    printf("Tempo matrix_matrix_mult: %f ms\n", time_matrix_mult);
+    printf("Tempo total: %f ms\n", timedifference_msec(overall_t1, overall_t2));
     // --- Liberação ---
     free(A.rows);
     free(B.rows);

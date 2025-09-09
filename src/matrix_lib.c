@@ -64,11 +64,6 @@ int matrix_matrix_mult(struct matrix *matrixA, struct matrix *matrixB, struct ma
     }
 
     for (unsigned int i = 0; i < matrixA->height; i++) {   // percorre as linhas de A
-        for(unsigned int j = 0; j < matrixB->width; j++)
-        {
-            matrixC->rows[i * matrixC->width + j] = 0.0; // inicializa C[i][j]
-        }
-
         for (unsigned int k = 0; k < matrixA->width; k++) { // percorre cada elemento da linha i de A e da coluna j de B
             float a = matrixA->rows[i * matrixA->width + k];
             for(unsigned int j = 0; j < matrixB->width; j++)
