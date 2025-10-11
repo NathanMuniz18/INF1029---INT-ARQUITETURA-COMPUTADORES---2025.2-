@@ -9,6 +9,8 @@ Para executar:
 ./test/file_gen N_LINHAS N_COLUNAS NOME_DO_ARQUIVO.dat
 Exemplo:
 ./test/file_gen 3 4 test/matrix_3x4.dat
+./test/file_gen 1024 1024 test/matrix_1024x1024_1.dat
+./test/file_gen 2048 2048 test/matrix_2048x2048_1.dat
 ./test/file_gen 4 3 test/matrix_4x3.dat
 */
 

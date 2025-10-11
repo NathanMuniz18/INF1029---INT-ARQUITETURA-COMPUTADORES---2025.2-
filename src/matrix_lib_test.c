@@ -8,30 +8,39 @@
 /*
 Para compilar:
 gcc –std=c11 –mfma -o matrix_lib_test src/matrix_lib.c src/matrix_lib_test.c  src/timer.c
+trab 3 gcc -std=c11 -pthread -mfma -o matrix_lib_test src/matrix_lib_test.c src/matrix_lib.c src/timer.c
 
 Para executar:
 ./matrix_lib_test <escala> <A_linhas> <A_cols> <B_linhas> <B_cols> <arquivo_A> <arquivo_B> <arquivo_out1> <arquivo_out2>
-./matrix_lib_test 5.0 1024 1024 1024 1024 test/matrix_1024x1024_1.dat test/matrix_1024x1024_1.dat test/result1.dat test/result2.dat
+./matrix_lib_test 5.0 1024 1024 1024 1024 4 test/matrix_1024x1024_1.dat test/matrix_1024x1024_2.dat test/result1.dat test/result2.dat
+./matrix_lib_test 5.0 2048 2048 2048 2048 4 test/matrix_2048x2048_1.dat test/matrix_2048x2048_2.dat test/result1.dat test/result2.dat
+
 */
 
 int main(int argc, char *argv[]) {
-    if (argc != 10) {
-        printf("Uso: %s <escala> <A_linhas> <A_cols> <B_linhas> <B_cols> <arquivo_A> <arquivo_B> <arquivo_out1> <arquivo_out2>\n", argv[0]);
-        return 1;
-    }
+    // A verificação correta deve checar por 11 argumentos no total.
+    if (argc != 11) {
+
+        printf("Uso: %s <escala> <A_linhas> <A_cols> <B_linhas> <B_cols> <num_threads> <arquivo_A> <arquivo_B> <arquivo_out1> <arquivo_out2>\n", argv[0]);
+        return 1; // Encerra o programa se o número de argumentos estiver incorreto.
+    } 
 
     // --- Conversão dos argumentos ---
+
     char *eptr;
     float scalar = strtof(argv[1], &eptr);
     unsigned long int A_h = strtoul(argv[2], &eptr, 10);
     unsigned long int A_w = strtoul(argv[3], &eptr, 10);
     unsigned long int B_h = strtoul(argv[4], &eptr, 10);
     unsigned long int B_w = strtoul(argv[5], &eptr, 10);
+    int num_threads = strtol(argv[6], &eptr, 10);
+    
+    char *fileA = argv[7];
+    char *fileB = argv[8];
+    char *fileOut1 = argv[9];
+    char *fileOut2 = argv[10];
 
-    char *fileA = argv[6];
-    char *fileB = argv[7];
-    char *fileOut1 = argv[8];
-    char *fileOut2 = argv[9];
+    set_number_threads(num_threads);
 
     if (A_w != B_h) {
         printf("Erro: número de colunas de A deve ser igual ao número de linhas de B.\n");
