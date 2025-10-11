@@ -26,22 +26,15 @@ void* scalar_mult_worker(void *args) {
     unsigned long start_row = thread_args->start_row;
     unsigned long end_row = thread_args->end_row;
 
-    // 1. Crie um vetor AVX onde todas as 8 posições contêm o valor escalar
     __m256 scalar_vec = _mm256_set1_ps(scalar);
 
-    // 2. O laço externo percorre as linhas designadas para esta thread 
+ 
     for (unsigned long i = start_row; i < end_row; i++) {
         unsigned long row_offset = i * A->width;
-        
-        // 3. O laço interno agora avança de 8 em 8 colunas
+
         for (unsigned long j = 0; j < A->width; j += 8) {
-            // Carrega 8 floats da matriz para um vetor AVX
             __m256 matrix_vec = _mm256_loadu_ps(&A->rows[row_offset + j]);
-            
-            // Multiplica os 8 floats da matriz pelo escalar (tudo em uma instrução)
             matrix_vec = _mm256_mul_ps(matrix_vec, scalar_vec);
-            
-            // Armazena os 8 resultados de volta na matriz
             _mm256_storeu_ps(&A->rows[row_offset + j], matrix_vec);
         }
     }

@@ -18,11 +18,10 @@ Para executar:
 */
 
 int main(int argc, char *argv[]) {
-    // A verificação correta deve checar por 11 argumentos no total.
     if (argc != 11) {
 
         printf("Uso: %s <escala> <A_linhas> <A_cols> <B_linhas> <B_cols> <num_threads> <arquivo_A> <arquivo_B> <arquivo_out1> <arquivo_out2>\n", argv[0]);
-        return 1; // Encerra o programa se o número de argumentos estiver incorreto.
+        return 1; 
     } 
 
     // --- Conversão dos argumentos ---
