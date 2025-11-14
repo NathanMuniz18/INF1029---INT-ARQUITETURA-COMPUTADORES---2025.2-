@@ -7,7 +7,7 @@
 
 /*
 Para compilar:
-    nvcc -O3 -o matrix_lib_test src/matrix_lib_test.cu src/matrix_lib.cu src/timer.cu
+    nvcc -O3 -o matrix_lib_test src/matrix_lib_test.cu src/matrix_lib.cu src/timer.c
 
 Para executar:
 
@@ -15,10 +15,10 @@ Para executar:
                       <arquivo_A> <arquivo_B> <arquivo_out1> <arquivo_out2>
 
 Exemplo (1024x1024):
-./matrix_lib_test 5.0 1024 1024 1024 1024 256 4096 4096 test/matrix_1024x1024_1.dat test/matrix_1024x1024_2.dat test/result1.dat test/result2.dat
+./matrix_lib_test 5.0 1024 1024 1024 1024 256 4096 1024 test/matrix_1024x1024_1.dat test/matrix_1024x1024_2.dat test/result1.dat test/result2.dat
 
 Exemplo (2048x2048):
-    ./matrix_lib_test 3.0 2048 2048 2048 2048 256 4096 4096 test/matrix_2048x2048_1.dat test/matrix_2048x2048_2.dat test/result1.dat test/result2.dat
+    ./matrix_lib_test 3.0 2048 2048 2048 2048 256 4096 1024 test/matrix_2048x2048_1.dat test/matrix_2048x2048_2.dat test/result1.dat test/result2.dat
 */
 
 

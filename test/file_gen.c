@@ -32,8 +32,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (unsigned long int i = 0; i < linhas * colunas; i++) {
-        float value = (float)(i + 1);  // pode ser sequencial
-        // float value = (float)rand() / RAND_MAX; // ou aleatório entre 0 e 1
+        float value = 2;  
         fwrite(&value, sizeof(float), 1, f);
     }
 
