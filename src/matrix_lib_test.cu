@@ -70,9 +70,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // -------------------------------------------------------------------------
-    // 1. Alocação HOST
-    // -------------------------------------------------------------------------
     struct matrix A, B, C;
 
     A.height = A_h; A.width = A_w;
@@ -92,9 +89,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // -------------------------------------------------------------------------
-    // 2. LER arquivos binários em A.h_rows e B.h_rows
-    // -------------------------------------------------------------------------
+
     FILE *fa = fopen(fileA, "rb");
     if (!fa) { printf("Erro ao abrir %s\n", fileA); return 1; }
     fread(A.h_rows, sizeof(float), A_h * A_w, fa);
@@ -105,13 +100,10 @@ int main(int argc, char *argv[])
     fread(B.h_rows, sizeof(float), B_h * B_w, fb);
     fclose(fb);
 
-    // Iniciar C com zeros
     for (unsigned long i = 0; i < A_h * B_w; i++)
         C.h_rows[i] = 0.0f;
 
-    // -------------------------------------------------------------------------
-    // 3. Tentar FULL_ALLOC
-    // -------------------------------------------------------------------------
+
     unsigned long needed = sizeA + sizeB + sizeC;
     unsigned long max_bytes = max_gpu_mem_MiB * 1024UL * 1024UL;
 
@@ -133,21 +125,16 @@ int main(int argc, char *argv[])
             cudaMemset(C.d_rows, 0, sizeC);
         }
         else {
-            // fallback — libera e continua com partial
             cudaFree(A.d_rows);
             cudaFree(B.d_rows);
             cudaFree(C.d_rows);
         }
     }
 
-    // -------------------------------------------------------------------------
-    // 4. PARTIAL_ALLOC (fallback)
-    // -------------------------------------------------------------------------
     if (A.alloc_mode == PARTIAL_ALLOC ||
         B.alloc_mode == PARTIAL_ALLOC ||
         C.alloc_mode == PARTIAL_ALLOC)
     {
-        // Em PARTIAL, B precisa ser FULL_ALLOC
         unsigned long sizeBfull = sizeB;
         if (cudaMalloc((void**)&B.d_rows, sizeBfull) != cudaSuccess) {
             printf("Erro: não foi possível alocar B na GPU.\n");
@@ -156,14 +143,12 @@ int main(int argc, char *argv[])
         B.alloc_mode = FULL_ALLOC;
         cudaMemcpy(B.d_rows, B.h_rows, sizeBfull, cudaMemcpyHostToDevice);
 
-        // A.d_rows = buffer de 1 linha
         if (cudaMalloc((void**)&A.d_rows, A_w * sizeof(float)) != cudaSuccess) {
             printf("Erro: não foi possível alocar buffer A.\n");
             return 1;
         }
         A.alloc_mode = PARTIAL_ALLOC;
 
-        // C.d_rows = buffer de 1 linha
         if (cudaMalloc((void**)&C.d_rows, B_w * sizeof(float)) != cudaSuccess) {
             printf("Erro: não foi possível alocar buffer C.\n");
             return 1;
@@ -171,20 +156,11 @@ int main(int argc, char *argv[])
         C.alloc_mode = PARTIAL_ALLOC;
     }
 
-    // -------------------------------------------------------------------------
-    // 5. GRID SETUP
-    // -------------------------------------------------------------------------
     set_grid_size(threads_per_block, max_blocks);
 
-    // -------------------------------------------------------------------------
-    // 6. Medição
-    // -------------------------------------------------------------------------
     struct timeval t0, t1, t2, t3, total0, total1;
     gettimeofday(&total0, NULL);
 
-    // -------------------------------------------------------------------------
-    // 7. scalar_matrix_mult
-    // -------------------------------------------------------------------------
     gettimeofday(&t0, NULL);
     if (!scalar_matrix_mult(scalar, &A)) {
         printf("Erro em scalar_matrix_mult\n");
@@ -193,14 +169,10 @@ int main(int argc, char *argv[])
     gettimeofday(&t1, NULL);
     float t_scalar = timedifference_msec(t0, t1);
 
-    // salvar resultado de A
     FILE *f1 = fopen(fileOut1, "wb");
     fwrite(A.h_rows, sizeof(float), A_h*A_w, f1);
     fclose(f1);
 
-    // -------------------------------------------------------------------------
-    // 8. matrix_matrix_mult
-    // -------------------------------------------------------------------------
     gettimeofday(&t2, NULL);
     if (!matrix_matrix_mult(&A, &B, &C)) {
         printf("Erro em matrix_matrix_mult\n");
@@ -209,32 +181,23 @@ int main(int argc, char *argv[])
     gettimeofday(&t3, NULL);
     float t_matmul = timedifference_msec(t2, t3);
 
-    // salvar C
+
     FILE *f2 = fopen(fileOut2, "wb");
     fwrite(C.h_rows, sizeof(float), A_h * B_w, f2);
     fclose(f2);
 
     gettimeofday(&total1, NULL);
 
-    // -------------------------------------------------------------------------
-    // 9. Prints (até 256 elementos)
-    // -------------------------------------------------------------------------
     print_matrix("Matriz A (após scalar)", A.h_rows, A_h, A_w);
     print_matrix("Matriz B", B.h_rows, B_h, B_w);
     print_matrix("Matriz C = A × B", C.h_rows, A_h, B_w);
 
-    // -------------------------------------------------------------------------
-    // 10. Infos finais
-    // -------------------------------------------------------------------------
     printf("\n-----------------------------------------\n");
     printf("Tempo scalar_matrix_mult: %f ms\n", t_scalar);
     printf("Tempo matrix_matrix_mult: %f ms\n", t_matmul);
     printf("Tempo total: %f ms\n", timedifference_msec(total0, total1));
     printf("-----------------------------------------\n");
 
-    // -------------------------------------------------------------------------
-    // 11. Free
-    // -------------------------------------------------------------------------
     cudaFree(A.d_rows);
     cudaFree(B.d_rows);
     cudaFree(C.d_rows);
